@@ -17,10 +17,20 @@ namespace DevHabitTracker.Controllers
         }
 
         [HttpGet("GetAllHabits")]
-        public ActionResult<List<Habit>> GetHabits()
+        public async Task<IActionResult> GetHabits()
         {
-            var habits = _habitService.GetHabits();
+            var habits = await _habitService.GetHabitsAsync();
             return Ok(habits);
+        }
+
+        [HttpPost("AddHabits")]
+        public async Task<IActionResult> AddHabits([FromBody] List<Habit> habits)
+        {
+            if (habits == null || !habits.Any())
+                return BadRequest("Habit list is empty.");
+
+            await _habitService.AddHabitsAsync(habits);
+            return Ok("Habits added successfully.");
         }
     }
 }

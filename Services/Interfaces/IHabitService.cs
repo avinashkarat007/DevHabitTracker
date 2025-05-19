@@ -4,6 +4,8 @@ namespace DevHabitTracker.Services.Interfaces
 {
     public interface IHabitService
     {
-        List<Habit> GetHabits();
+        Task<List<Habit>> GetHabitsAsync();
+
+        Task AddHabitsAsync(IEnumerable<Habit> habits);
     }
 }
