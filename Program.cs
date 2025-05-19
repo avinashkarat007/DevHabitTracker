@@ -1,3 +1,10 @@
+using DevHabitTracker.Database;
+using DevHabitTracker.Services;
+using DevHabitTracker.Services.Interfaces;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using System;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,6 +12,29 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+Console.WriteLine($"Using connection string: {connectionString}");
+
+// Test manual connection
+using var connection = new SqlConnection(connectionString);
+try
+{
+    connection.Open();
+    Console.WriteLine("Manual test connection successful!");
+    connection.Close();
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Manual connection failed: {ex.Message}");
+}
+
+builder.Services.AddScoped<IHabitService, HabitService>();
+
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 var app = builder.Build();
 
