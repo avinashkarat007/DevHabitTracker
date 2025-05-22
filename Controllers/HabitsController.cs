@@ -1,4 +1,5 @@
-﻿using DevHabitTracker.Entities;
+﻿using DevHabitTracker.DTOs.Habit;
+using DevHabitTracker.Entities;
 using DevHabitTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,21 +17,38 @@ namespace DevHabitTracker.Controllers
             _habitService = habitService;
         }
 
-        [HttpGet("GetAllHabits")]
-        public async Task<IActionResult> GetHabits()
+        [HttpGet()]
+        public async Task<ActionResult<List<HabitDto>>> GetHabits()
         {
             var habits = await _habitService.GetHabitsAsync();
             return Ok(habits);
         }
 
-        [HttpPost("AddHabits")]
-        public async Task<IActionResult> AddHabits([FromBody] List<Habit> habits)
+        // GET: api/habits/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<HabitDto>> GetHabitById(string id)
+        {
+            var habit = await _habitService.GetHabitByIdAsync(id);
+            if (habit == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(habit);
+        }
+
+        [HttpPost()]
+        public async Task<IActionResult> CreateHabits([FromBody] List<CreateHabitDto> habits)
         {
             if (habits == null || !habits.Any())
-                return BadRequest("Habit list is empty.");
+            {
+                return BadRequest("Habit list cannot be empty.");
+            }
 
-            await _habitService.AddHabitsAsync(habits);
-            return Ok("Habits added successfully.");
+            await _habitService.CreateHabitsAsync(habits);
+            return CreatedAtAction(nameof(GetHabits), null);
         }
+
+
     }
 }

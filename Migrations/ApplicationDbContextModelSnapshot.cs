@@ -24,9 +24,8 @@ namespace DevHabitTracker.Migrations
 
             modelBuilder.Entity("DevHabitTracker.Entities.Habit", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -40,15 +39,12 @@ namespace DevHabitTracker.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("LastCompletedAt")
+                    b.Property<DateTime?>("LastUpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("StreakCount")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

@@ -2,7 +2,7 @@
 {
     public class Habit
     {
-        public Guid Id { get; set; } = Guid.NewGuid(); // Unique identifier for each habit
+        public string Id { get; set; } 
 
         public string Name { get; set; } = string.Empty; // e.g., "Write unit tests", "Read tech blog"
 
@@ -14,9 +14,7 @@
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public DateTime? LastCompletedAt { get; set; } // Last time the habit was done
-
-        public int StreakCount { get; set; } = 0; // Number of consecutive successful completions
+        public DateTime? LastUpdatedAt { get; set; } // Last time the habit was done
     }
 
     public enum HabitFrequency

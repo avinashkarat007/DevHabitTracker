@@ -1,11 +1,16 @@
-﻿using DevHabitTracker.Entities;
+﻿using DevHabitTracker.DTOs.Habit;
+using DevHabitTracker.Entities;
 
 namespace DevHabitTracker.Services.Interfaces
 {
     public interface IHabitService
     {
-        Task<List<Habit>> GetHabitsAsync();
+        Task<List<HabitDto>> GetHabitsAsync();
 
-        Task AddHabitsAsync(IEnumerable<Habit> habits);
+        Task<HabitDto?> GetHabitByIdAsync(string id);
+
+        Task CreateHabitsAsync(IEnumerable<CreateHabitDto> createHabitDtos);
+
+        Task UpdateHabitAsync(string id, UpdateHabitDto updateHabitDto);
     }
 }

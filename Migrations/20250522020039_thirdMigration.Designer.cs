@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevHabitTracker.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250519064134_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250522020039_thirdMigration")]
+    partial class thirdMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,9 +27,8 @@ namespace DevHabitTracker.Migrations
 
             modelBuilder.Entity("DevHabitTracker.Entities.Habit", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -43,15 +42,12 @@ namespace DevHabitTracker.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("LastCompletedAt")
+                    b.Property<DateTime?>("LastUpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("StreakCount")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
