@@ -50,5 +50,16 @@ namespace DevHabitTracker.Controllers
         }
 
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateHabit(string id, [FromBody] UpdateHabitDto habit)
+        {
+            //if (habits == null || !habits.Any())
+            //{
+            //    return BadRequest("Habit list cannot be empty.");
+            //}
+
+            await _habitService.UpdateHabitAsync(id, habit);
+            return NoContent();
+        }
     }
 }
