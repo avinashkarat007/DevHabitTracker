@@ -12,5 +12,7 @@ namespace DevHabitTracker.Services.Interfaces
         Task CreateHabitsAsync(IEnumerable<CreateHabitDto> createHabitDtos);
 
         Task UpdateHabitAsync(string id, UpdateHabitDto updateHabitDto);
+
+        Task<bool> IsHabitExists(string id);
     }
 }

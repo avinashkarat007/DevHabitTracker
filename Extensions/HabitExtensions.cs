@@ -1,4 +1,5 @@
 ﻿using DevHabitTracker.DTOs.Habit;
+using DevHabitTracker.DTOs.Tag;
 using DevHabitTracker.Entities;
 
 namespace DevHabitTracker.Extensions
@@ -55,6 +56,30 @@ namespace DevHabitTracker.Extensions
                 Description = dto.Description,
                 Frequency = dto.Frequency,
                 IsActive = dto.IsActive,
+                LastUpdatedAt = DateTime.UtcNow
+            };
+        }
+
+        public static TagDto ToDto(this Tag tag)
+        {
+            return new TagDto
+            {
+                Id = tag.Id,
+                Name = tag.Name,
+                Description = tag.Description,
+                CreatedAt = tag.CreatedAt
+            };
+        }
+
+
+        public static Tag ToEntity(this TagDto dto)
+        {
+            return new Tag
+            {
+                Id = $"h_{Guid.CreateVersion7()}",
+                Name = dto.Name,
+                Description = dto.Description,
+                CreatedAt = DateTime.UtcNow,
                 LastUpdatedAt = DateTime.UtcNow
             };
         }

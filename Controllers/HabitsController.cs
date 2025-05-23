@@ -2,6 +2,7 @@
 using DevHabitTracker.Entities;
 using DevHabitTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevHabitTracker.Controllers
@@ -53,10 +54,10 @@ namespace DevHabitTracker.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateHabit(string id, [FromBody] UpdateHabitDto habit)
         {
-            //if (habits == null || !habits.Any())
-            //{
-            //    return BadRequest("Habit list cannot be empty.");
-            //}
+            if (!await _habitService.IsHabitExists(id))
+            {
+                return NotFound();
+            }
 
             await _habitService.UpdateHabitAsync(id, habit);
             return NoContent();

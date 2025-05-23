@@ -15,7 +15,9 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-    });
+    })
+    .AddNewtonsoftJson()
+    .AddXmlSerializerFormatters();
 
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -38,7 +40,7 @@ catch (Exception ex)
 }
 
 builder.Services.AddScoped<IHabitService, HabitService>();
-
+builder.Services.AddScoped<ITagService, TagService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

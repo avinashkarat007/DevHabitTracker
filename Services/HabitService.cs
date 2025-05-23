@@ -51,5 +51,12 @@ namespace DevHabitTracker.Services
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> IsHabitExists(string id)
+        {
+            Habit? habit = await _context.Habits.FirstOrDefaultAsync(h => h.Id == id);
+            if (habit == null) return false;
+            return true;
+        }
     }
 }
