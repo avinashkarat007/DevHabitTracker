@@ -1,4 +1,5 @@
 using DevHabitTracker.Database;
+using DevHabitTracker.Middleware;
 using DevHabitTracker.Services;
 using DevHabitTracker.Services.Interfaces;
 using FluentValidation;
@@ -21,9 +22,14 @@ builder.Services.AddControllers()
     .AddXmlSerializerFormatters();
 
 
+builder.Services.AddProblemDetails();
+
+
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 builder.Services.AddOpenApi();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -60,6 +66,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseExceptionHandler();
 
 app.MapControllers();
 

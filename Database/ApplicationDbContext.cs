@@ -13,6 +13,10 @@ namespace DevHabitTracker.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Tag>()
+                        .HasIndex(t => t.Name)
+                        .IsUnique();
+
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<HabitTag>()
