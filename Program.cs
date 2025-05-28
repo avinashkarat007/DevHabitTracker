@@ -1,6 +1,7 @@
 using DevHabitTracker.Database;
 using DevHabitTracker.Services;
 using DevHabitTracker.Services.Interfaces;
+using FluentValidation;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -19,6 +20,8 @@ builder.Services.AddControllers()
     .AddNewtonsoftJson()
     .AddXmlSerializerFormatters();
 
+
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

@@ -24,10 +24,27 @@ namespace DevHabitTracker.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<TagDto>> GetHabitsAsync()
+        public async Task<List<TagDto>> GetTagsAsync()
         {
             var tags = await _context.Tags.ToListAsync();
             return tags.Select(t => t.ToDto()).ToList();
         }
+
+        public async Task<List<string>> GetExistingTagNamesAsync(List<string> tagNames)
+        {
+            // Normalize input: trim and make lower case for case-insensitive comparison
+            var normalizedInputNames = tagNames
+                .Where(name => !string.IsNullOrWhiteSpace(name))
+                .Select(name => name.Trim().ToLower())
+                .ToList();
+
+            var existingNames = await _context.Tags
+                .Where(tag => normalizedInputNames.Contains(tag.Name.ToLower()))
+                .Select(tag => tag.Name)
+                .ToListAsync();
+
+            return existingNames;
+        }
+
     }
 }

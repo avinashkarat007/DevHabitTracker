@@ -19,22 +19,63 @@ namespace DevHabitTracker.Controllers
         }
 
         [HttpGet()]
-        public async Task<ActionResult<List<HabitDto>>> GetHabits()
+        public async Task<ActionResult<List<HabitDto>>> GetTags()
         {
-            var tags = await _tagService.GetHabitsAsync();
+            var tags = await _tagService.GetTagsAsync();
             return Ok(tags);
         }
 
         [HttpPost()]
-        public async Task<IActionResult> CreateHabits([FromBody] List<TagDto> tags)
+        public async Task<IActionResult> CreateTags([FromBody] List<TagDto> createTagDto)
         {
-            if (tags == null || !tags.Any())
+            if (createTagDto == null || !createTagDto.Any())
             {
-                return BadRequest("Habit list cannot be empty.");
+                return BadRequest(new ProblemDetails
+                {
+                    Title = "Invalid Request",
+                    Status = StatusCodes.Status400BadRequest,
+                    Detail = "Tag list cannot be empty.",
+                    Instance = HttpContext.Request.Path
+                });
             }
 
-            await _tagService.CreateTagAsync(tags);
-            return CreatedAtAction(nameof(GetHabits), null);
+            // 1. Check for duplicate tag names in the input
+            var duplicateNamesInInput = createTagDto
+                .GroupBy(t => t.Name.Trim(), StringComparer.OrdinalIgnoreCase)
+                .Where(g => g.Count() > 1)
+                .Select(g => g.Key)
+                .ToList();
+
+            if (duplicateNamesInInput.Any())
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Title = "Validation Failed",
+                    Status = StatusCodes.Status400BadRequest,
+                    Detail = "Duplicate tag names found in request.",
+                    Instance = HttpContext.Request.Path,
+                    Extensions = { ["duplicateTagNames"] = duplicateNamesInInput }
+                });
+            }
+
+            // 2. Check if any of these tag names already exist in the database
+            var inputNames = createTagDto.Select(t => t.Name.Trim()).ToList();
+            var existingNames = await _tagService.GetExistingTagNamesAsync(inputNames); 
+
+            if (existingNames.Any())
+            {
+                return Conflict(new ProblemDetails
+                {
+                    Title = "Conflict",
+                    Status = StatusCodes.Status409Conflict,
+                    Detail = "Some tag names already exist in the database.",
+                    Instance = HttpContext.Request.Path,
+                    Extensions = { ["existingTagNames"] = existingNames }
+                });
+            }
+
+            await _tagService.CreateTagAsync(createTagDto);
+            return CreatedAtAction(nameof(GetTags), null);
         }
     }
 }

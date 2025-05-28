@@ -15,6 +15,10 @@
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? LastUpdatedAt { get; set; } // Last time the habit was done
+
+        public List<HabitTag>? HabitTags { get; set; } = new List<HabitTag>();
+
+        public List<Tag>? Tags { get; set; }
     }
 
     public enum HabitFrequency

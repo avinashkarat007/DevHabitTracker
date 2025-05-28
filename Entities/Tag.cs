@@ -10,6 +10,8 @@
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public DateTime? LastUpdatedAt { get; set; } 
+        public DateTime? LastUpdatedAt { get; set; }
+
+        public List<HabitTag>? HabitTags { get; set; } = new List<HabitTag>();
     }
 }

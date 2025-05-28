@@ -1,6 +1,7 @@
 ﻿using DevHabitTracker.DTOs.Habit;
 using DevHabitTracker.Entities;
 using DevHabitTracker.Services.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -39,14 +40,49 @@ namespace DevHabitTracker.Controllers
         }
 
         [HttpPost()]
-        public async Task<IActionResult> CreateHabits([FromBody] List<CreateHabitDto> habits)
+        public async Task<IActionResult> CreateHabits([FromBody] List<CreateHabitDto> habitsDto
+            ,IValidator<CreateHabitDto> validator)
         {
-            if (habits == null || !habits.Any())
+
+            if (habitsDto == null || !habitsDto.Any())
             {
-                return BadRequest("Habit list cannot be empty.");
+                return BadRequest(ProblemDetailsFactory.CreateProblemDetails(HttpContext,
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Invalid Request",
+                detail: "Habit list cannot be empty."));
             }
 
-            await _habitService.CreateHabitsAsync(habits);
+            var allFailures = new List<FluentValidation.Results.ValidationFailure>();
+
+            foreach (var habit in habitsDto)
+            {
+                var validationResult = await validator.ValidateAsync(habit);
+                if (!validationResult.IsValid)
+                {
+                    allFailures.AddRange(validationResult.Errors);
+                }
+            }
+
+            if (allFailures.Any())
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Title = "Validation Failed",
+                    Status = StatusCodes.Status400BadRequest,
+                    Detail = "One or more habits are invalid.",
+                    Extensions =
+                {
+                    ["errors"] = allFailures.Select(e => new
+                    {
+                        Property = e.PropertyName,
+                        Error = e.ErrorMessage
+                    })
+                }
+                });
+            }
+
+
+            await _habitService.CreateHabitsAsync(habitsDto);
             return CreatedAtAction(nameof(GetHabits), null);
         }
 

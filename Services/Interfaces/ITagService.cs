@@ -5,8 +5,11 @@ namespace DevHabitTracker.Services.Interfaces
 {
     public interface ITagService  
     {
-        Task<List<TagDto>> GetHabitsAsync();
+        Task<List<TagDto>> GetTagsAsync();
 
-        Task CreateTagAsync(IEnumerable<TagDto> createHabitDtos);
+        Task CreateTagAsync(IEnumerable<TagDto> createTagDtos);
+
+        Task<List<string>> GetExistingTagNamesAsync(List<string> tagNames);
+
     }
 }
