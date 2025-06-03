@@ -17,11 +17,46 @@ namespace DevHabitTracker.Services
             _context = context;
         }
 
-        public async Task<List<HabitDto>> GetHabitsAsync()
+        public async Task<List<HabitDto>> GetHabitsAsync(HabitQueryParameters query)
         {
             var habits = await _context.Habits.ToListAsync();
+
+            // Apply search filter
+            if (!string.IsNullOrWhiteSpace(query.search))
+            {
+                habits = habits
+                    .Where(h =>
+                        h.Name.Contains(query.search, StringComparison.OrdinalIgnoreCase) ||
+                        (h.Description != null && h.Description.Contains(query.search, StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
+            }
+
+            // Filter by frequency if valid
+            if (query.frequency.HasValue)
+            {
+                var freqText = query.frequency.ToString();
+                habits = habits
+                    .Where(h => string.Equals(h.Frequency.ToString(), freqText, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            if (query.priority.HasValue)
+            {
+                var prioText = query.priority.ToString();
+                habits = habits
+                    .Where(h => string.Equals(h.Priority.ToString(), prioText, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+
+            // Paging
+            int skip = (query.Page - 1) * query.PageSize;
+            habits = habits.Skip(skip).Take(query.PageSize).ToList();
+
+            // Map to DTOs
             return habits.Select(h => h.ToDto()).ToList();
         }
+
 
         public async Task<HabitDto?> GetHabitByIdAsync(string id)
         {

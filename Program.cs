@@ -1,4 +1,5 @@
 using DevHabitTracker.Database;
+using DevHabitTracker.Extensions;
 using DevHabitTracker.Middleware;
 using DevHabitTracker.Services;
 using DevHabitTracker.Services.Interfaces;
@@ -12,6 +13,8 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.AddAuthenticationServices();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -30,30 +33,21 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
+builder.Services.AddApiVersioning().AddMvc();
+
 builder.Services.AddOpenApi();
-
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-Console.WriteLine($"Using connection string: {connectionString}");
-
-// Test manual connection
-using var connection = new SqlConnection(connectionString);
-try
-{
-    connection.Open();
-    Console.WriteLine("Manual test connection successful!");
-    connection.Close();
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"Manual connection failed: {ex.Message}");
-}
 
 builder.Services.AddScoped<IHabitService, HabitService>();
 builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 

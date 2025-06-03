@@ -10,7 +10,9 @@ namespace DevHabitTracker.DTOs.Habit
 
         public string? Description { get; set; }
 
-        public HabitFrequency Frequency { get; set; }
+        public string Frequency { get; set; }
+
+        public string Priority { get; set; }
 
         public bool IsActive { get; set; }
 

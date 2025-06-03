@@ -10,6 +10,8 @@ namespace DevHabitTracker.DTOs.Habit
         public string? Description { get; set; }
 
         public HabitFrequency Frequency { get; set; }
+
+        public HabitPriority Priority { get; set; }
     }
 
     public sealed class CreateHabitDtoValidator : AbstractValidator<CreateHabitDto>
@@ -18,7 +20,7 @@ namespace DevHabitTracker.DTOs.Habit
         {
             RuleFor(x => x.Name).NotEmpty().MinimumLength(4);
 
-            RuleFor(x => x.Description).MaximumLength(30);
+            RuleFor(x => x.Description).MaximumLength(100);
         }
 
     }

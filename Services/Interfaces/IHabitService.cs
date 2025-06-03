@@ -5,7 +5,7 @@ namespace DevHabitTracker.Services.Interfaces
 {
     public interface IHabitService
     {
-        Task<List<HabitDto>> GetHabitsAsync();
+        Task<List<HabitDto>> GetHabitsAsync(HabitQueryParameters query);
 
         Task<HabitDto?> GetHabitByIdAsync(string id);
 

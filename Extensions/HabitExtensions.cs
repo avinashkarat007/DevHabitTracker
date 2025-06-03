@@ -13,7 +13,8 @@ namespace DevHabitTracker.Extensions
                 Id = habit.Id,
                 Name = habit.Name,
                 Description = habit.Description,
-                Frequency = habit.Frequency,
+                Frequency = habit.Frequency.ToString(),
+                Priority = habit.Priority.ToString(),
                 IsActive = habit.IsActive,
                 CreatedAt = habit.CreatedAt,
                 LastCompletedAt = habit.LastUpdatedAt
@@ -27,7 +28,8 @@ namespace DevHabitTracker.Extensions
                 Id = dto.Id,
                 Name = dto.Name,
                 Description = dto.Description,
-                Frequency = dto.Frequency,
+                Frequency = Enum.Parse<HabitFrequency>(dto.Frequency, ignoreCase: true), // string -> enum
+                Priority = Enum.Parse<HabitPriority>(dto.Priority, ignoreCase: true),    // string -> enum
                 IsActive = dto.IsActive,
                 CreatedAt = dto.CreatedAt == default ? DateTime.UtcNow : dto.CreatedAt,
                 LastUpdatedAt = dto.LastCompletedAt

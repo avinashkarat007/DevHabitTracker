@@ -8,7 +8,9 @@
 
         public string? Description { get; set; } // Optional detailed explanation
 
-        public HabitFrequency Frequency { get; set; } = HabitFrequency.Daily;
+        public HabitFrequency Frequency { get; set; }
+
+        public HabitPriority Priority { get; set; }
 
         public bool IsActive { get; set; } = true; // Whether the habit is currently tracked
 
@@ -28,4 +30,10 @@
         Monthly
     }
 
+    public enum HabitPriority
+    {
+        Low,
+        Medium,
+        High
+    }
 }

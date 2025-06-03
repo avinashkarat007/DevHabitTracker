@@ -19,12 +19,13 @@ namespace DevHabitTracker.Controllers
             _habitService = habitService;
         }
 
-        [HttpGet()]
-        public async Task<ActionResult<List<HabitDto>>> GetHabits()
+        [HttpGet]
+        public async Task<ActionResult<List<HabitDto>>> GetHabits([FromQuery] HabitQueryParameters query)
         {
-            var habits = await _habitService.GetHabitsAsync();
+            var habits = await _habitService.GetHabitsAsync(query);
             return Ok(habits);
         }
+
 
         // GET: api/habits/{id}
         [HttpGet("{id}")]
@@ -43,7 +44,7 @@ namespace DevHabitTracker.Controllers
         public async Task<IActionResult> CreateHabits([FromBody] List<CreateHabitDto> habitsDto
             ,IValidator<CreateHabitDto> validator)
         {
-
+            // Null check.
             if (habitsDto == null || !habitsDto.Any())
             {
                 return BadRequest(ProblemDetailsFactory.CreateProblemDetails(HttpContext,
@@ -54,6 +55,7 @@ namespace DevHabitTracker.Controllers
 
             var allFailures = new List<FluentValidation.Results.ValidationFailure>();
 
+            // Fluent validation checks.
             foreach (var habit in habitsDto)
             {
                 var validationResult = await validator.ValidateAsync(habit);
