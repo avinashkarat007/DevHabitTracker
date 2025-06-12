@@ -2,6 +2,7 @@
 using DevHabitTracker.Entities;
 using DevHabitTracker.Services.Interfaces;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ namespace DevHabitTracker.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class HabitsController : ControllerBase
     {
         private readonly IHabitService _habitService;
