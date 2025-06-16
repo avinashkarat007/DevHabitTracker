@@ -41,6 +41,15 @@ namespace DevHabitTracker.Services
             return user?.ToDto();
         }
 
+        public async Task<UserDto?> GetUserByIdentityIdAsync(string identityId)
+        {
+            var user = await _applicationDbContext.Users
+                                                  .AsNoTracking()
+                                                  .FirstOrDefaultAsync(u => u.Id == identityId);
+
+            return user?.ToDto();
+        }
+
         public async Task<AccessTokensDto?> Login(LoginUserDto loginUserDto)
         {
 

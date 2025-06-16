@@ -1,5 +1,6 @@
 ﻿using DevHabitTracker.DTOs.Habit;
 using DevHabitTracker.Entities;
+using DevHabitTracker.Services;
 using DevHabitTracker.Services.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -15,10 +16,12 @@ namespace DevHabitTracker.Controllers
     public class HabitsController : ControllerBase
     {
         private readonly IHabitService _habitService;
+        private readonly IUserContext _userContext;
 
-        public HabitsController(IHabitService habitService)
+        public HabitsController(IHabitService habitService, IUserContext userContext)
         {
             _habitService = habitService;
+            this._userContext = userContext;
         }
 
         [HttpGet]
@@ -33,8 +36,15 @@ namespace DevHabitTracker.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<HabitDto>> GetHabitById(string id)
         {
-            var habit = await _habitService.GetHabitByIdAsync(id);
-            if (habit == null)
+            string? userId = await _userContext.GetUserIdAsync();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized();
+            }
+
+            var habit = await _habitService.GetHabitByIdAsync(id, userId);
+            if (habit is null)
             {
                 return NotFound();
             }
@@ -46,6 +56,13 @@ namespace DevHabitTracker.Controllers
         public async Task<IActionResult> CreateHabits([FromBody] List<CreateHabitDto> habitsDto
             ,IValidator<CreateHabitDto> validator)
         {
+            string? userId = await _userContext.GetUserIdAsync();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized();
+            }
+
             // Null check.
             if (habitsDto == null || !habitsDto.Any())
             {
@@ -86,7 +103,7 @@ namespace DevHabitTracker.Controllers
             }
 
 
-            await _habitService.CreateHabitsAsync(habitsDto);
+            await _habitService.CreateHabitsAsync(habitsDto, userId);
             return CreatedAtAction(nameof(GetHabits), null);
         }
 
@@ -94,12 +111,19 @@ namespace DevHabitTracker.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateHabit(string id, [FromBody] UpdateHabitDto habit)
         {
+            string? userId = await _userContext.GetUserIdAsync();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized();
+            }
+
             if (!await _habitService.IsHabitExists(id))
             {
                 return NotFound();
             }
 
-            await _habitService.UpdateHabitAsync(id, habit);
+            await _habitService.UpdateHabitAsync(id, habit, userId);
             return NoContent();
         }
     }

@@ -36,12 +36,13 @@ namespace DevHabitTracker.Extensions
             };
         }
 
-        public static Habit ToEntity(this CreateHabitDto dto)
+        public static Habit ToEntity(this CreateHabitDto dto, string userId)
         {
             return new Habit
             {
                 Id = $"h_{Guid.CreateVersion7()}",
                 Name = dto.Name,
+                UserId = userId,
                 Description = dto.Description,
                 Frequency = dto.Frequency,
                 IsActive = true,

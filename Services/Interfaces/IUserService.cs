@@ -13,5 +13,7 @@ namespace DevHabitTracker.Services.Interfaces
         Task<(bool Succeeded, IdentityResult IdentityResult, string? UserId, AccessTokensDto? accessToeken)> RegisterUserAsync(RegisterUserDto registerUserDto);
 
         Task<AccessTokensDto?> Login(LoginUserDto loginUserDto);
+
+        Task<UserDto?> GetUserByIdentityIdAsync(string identityId);
     }
 }

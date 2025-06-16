@@ -7,11 +7,11 @@ namespace DevHabitTracker.Services.Interfaces
     {
         Task<List<HabitDto>> GetHabitsAsync(HabitQueryParameters query);
 
-        Task<HabitDto?> GetHabitByIdAsync(string id);
+        Task<HabitDto?> GetHabitByIdAsync(string id, string userId);
 
-        Task CreateHabitsAsync(IEnumerable<CreateHabitDto> createHabitDtos);
+        Task CreateHabitsAsync(IEnumerable<CreateHabitDto> createHabitDtos, string userId);
 
-        Task UpdateHabitAsync(string id, UpdateHabitDto updateHabitDto);
+        Task UpdateHabitAsync(string id, UpdateHabitDto updateHabitDto, string userId);
 
         Task<bool> IsHabitExists(string id);
     }

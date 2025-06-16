@@ -42,8 +42,11 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddOpenApi();
 
+builder.Services.AddMemoryCache();
+
 builder.Services.AddScoped<IHabitService, HabitService>();
 builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddScoped<IUserContext, UserContext>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddTransient<TokenProvider>();
 

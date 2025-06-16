@@ -2,8 +2,9 @@
 {
     public class Habit
     {
-        public string Id { get; set; } 
+        public string Id { get; set; }
 
+        public string UserId { get; set; }
         public string Name { get; set; } = string.Empty; // e.g., "Write unit tests", "Read tech blog"
 
         public string? Description { get; set; } // Optional detailed explanation
