@@ -3,16 +3,30 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace DevHabitTracker.Migrations.ApplicationIdentityDb
+namespace DevHabitTracker.Migrations.Identity
 {
     /// <inheritdoc />
-    public partial class IdentityMigration : Migration
+    public partial class AddIdentity : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
                 name: "aspnet_roles",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_aspnet_roles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "aspnet_users",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -33,21 +47,28 @@ namespace DevHabitTracker.Migrations.ApplicationIdentityDb
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_aspnet_roles", x => x.Id);
+                    table.PrimaryKey("PK_aspnet_users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetRoles",
+                name: "aspnet_role_claims",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                    table.PrimaryKey("PK_aspnet_role_claims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_aspnet_role_claims_aspnet_roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "aspnet_roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -64,9 +85,9 @@ namespace DevHabitTracker.Migrations.ApplicationIdentityDb
                 {
                     table.PrimaryKey("PK_aspnet_user_claims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_aspnet_user_claims_aspnet_roles_UserId",
+                        name: "FK_aspnet_user_claims_aspnet_users_UserId",
                         column: x => x.UserId,
-                        principalTable: "aspnet_roles",
+                        principalTable: "aspnet_users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -84,9 +105,33 @@ namespace DevHabitTracker.Migrations.ApplicationIdentityDb
                 {
                     table.PrimaryKey("PK_aspnet_user_logins", x => new { x.LoginProvider, x.ProviderKey });
                     table.ForeignKey(
-                        name: "FK_aspnet_user_logins_aspnet_roles_UserId",
+                        name: "FK_aspnet_user_logins_aspnet_users_UserId",
                         column: x => x.UserId,
+                        principalTable: "aspnet_users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "aspnet_user_roles",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_aspnet_user_roles", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_aspnet_user_roles_aspnet_roles_RoleId",
+                        column: x => x.RoleId,
                         principalTable: "aspnet_roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_aspnet_user_roles_aspnet_users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "aspnet_users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -104,54 +149,9 @@ namespace DevHabitTracker.Migrations.ApplicationIdentityDb
                 {
                     table.PrimaryKey("PK_aspnet_user_tokens", x => new { x.UserId, x.LoginProvider, x.Name });
                     table.ForeignKey(
-                        name: "FK_aspnet_user_tokens_aspnet_roles_UserId",
+                        name: "FK_aspnet_user_tokens_aspnet_users_UserId",
                         column: x => x.UserId,
-                        principalTable: "aspnet_roles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "aspnet_role_claims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_aspnet_role_claims", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_aspnet_role_claims_AspNetRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "aspnet_user_roles",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_aspnet_user_roles", x => new { x.UserId, x.RoleId });
-                    table.ForeignKey(
-                        name: "FK_aspnet_user_roles_AspNetRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_aspnet_user_roles_aspnet_roles_UserId",
-                        column: x => x.UserId,
-                        principalTable: "aspnet_roles",
+                        principalTable: "aspnet_users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -162,16 +162,11 @@ namespace DevHabitTracker.Migrations.ApplicationIdentityDb
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "EmailIndex",
+                name: "RoleNameIndex",
                 table: "aspnet_roles",
-                column: "NormalizedEmail");
-
-            migrationBuilder.CreateIndex(
-                name: "UserNameIndex",
-                table: "aspnet_roles",
-                column: "NormalizedUserName",
+                column: "NormalizedName",
                 unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
+                filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_aspnet_user_claims_UserId",
@@ -189,11 +184,16 @@ namespace DevHabitTracker.Migrations.ApplicationIdentityDb
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "RoleNameIndex",
-                table: "AspNetRoles",
-                column: "NormalizedName",
+                name: "EmailIndex",
+                table: "aspnet_users",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                table: "aspnet_users",
+                column: "NormalizedUserName",
                 unique: true,
-                filter: "[NormalizedName] IS NOT NULL");
+                filter: "[NormalizedUserName] IS NOT NULL");
         }
 
         /// <inheritdoc />
@@ -215,10 +215,10 @@ namespace DevHabitTracker.Migrations.ApplicationIdentityDb
                 name: "aspnet_user_tokens");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "aspnet_roles");
 
             migrationBuilder.DropTable(
-                name: "aspnet_roles");
+                name: "aspnet_users");
         }
     }
 }

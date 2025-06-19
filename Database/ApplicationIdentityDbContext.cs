@@ -12,7 +12,8 @@ namespace DevHabitTracker.Database
             base.OnModelCreating(builder);
 
             builder.Entity<IdentityUser>().ToTable("aspnet_users");
-            builder.Entity<IdentityUser>().ToTable("aspnet_roles");
+            builder.Entity<IdentityRole>().ToTable("aspnet_roles");
+
             builder.Entity<IdentityUserRole<string>>().ToTable("aspnet_user_roles");
             builder.Entity<IdentityRoleClaim<string>>().ToTable("aspnet_role_claims");
             builder.Entity<IdentityUserClaim<string>>().ToTable("aspnet_user_claims");

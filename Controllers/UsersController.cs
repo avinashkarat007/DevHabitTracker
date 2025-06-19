@@ -1,4 +1,5 @@
 ﻿using DevHabitTracker.DTOs.User;
+using DevHabitTracker.Entities;
 using DevHabitTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +10,7 @@ namespace DevHabitTracker.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = Roles.Member)]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -22,6 +23,7 @@ namespace DevHabitTracker.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<List<UserDto>>> GetUsers()
         {
             var users = await _userService.GetAllUsersAsync();

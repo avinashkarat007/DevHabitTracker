@@ -52,7 +52,6 @@ namespace DevHabitTracker.Services
 
         public async Task<AccessTokensDto?> Login(LoginUserDto loginUserDto)
         {
-
             var identityUser  = await _userManager.FindByEmailAsync(loginUserDto.Email);
 
             if (identityUser == null || !await _userManager.CheckPasswordAsync(identityUser, loginUserDto.Password))
@@ -60,7 +59,9 @@ namespace DevHabitTracker.Services
                 return null;
             }
 
-            var tokenRequest = new TokenRequest(identityUser.Id, identityUser.Email!);
+            // Getting the roles of the logged in user.
+            IList<string> roles = await _userManager.GetRolesAsync(identityUser);            
+            var tokenRequest = new TokenRequest(identityUser.Id, identityUser.Email!, roles);
             AccessTokensDto accessToeken = _tokenProvider.Create(tokenRequest);
             return accessToeken;
         }
@@ -79,12 +80,22 @@ namespace DevHabitTracker.Services
                 };
 
                 // 1.  Creating the identity user
-                var identityResult = await _userManager.CreateAsync(identityUser, registerUserDto.Password);
-                if (!identityResult.Succeeded)
+                var createUserResult = await _userManager.CreateAsync(identityUser, registerUserDto.Password);
+                if (!createUserResult.Succeeded)
                 {
                     await identityTransaction.RollbackAsync();
-                    return (false, identityResult, null, null);
+                    return (false, createUserResult, null, null);
                 }
+
+                // Adding roles.
+                IdentityResult addToRoleResult = await _userManager.AddToRoleAsync(identityUser, Roles.Member);
+
+                if (!addToRoleResult.Succeeded)
+                {
+                    await identityTransaction.RollbackAsync();
+                    return (false, createUserResult, null, null);
+                }
+
 
                 var appUser = registerUserDto.ToEntity();
                 appUser.IdentityId = identityUser.Id;
@@ -96,9 +107,9 @@ namespace DevHabitTracker.Services
                 await identityTransaction.CommitAsync();
                 await appTransaction.CommitAsync();
 
-                AccessTokensDto accessToeken = _tokenProvider.Create(new TokenRequest(identityUser.Id, identityUser.Email));
+                AccessTokensDto accessToeken = _tokenProvider.Create(new TokenRequest(identityUser.Id, identityUser.Email, [Roles.Member]));
 
-                return (true, identityResult, appUser.Id, accessToeken);
+                return (true, createUserResult, appUser.Id, accessToeken);
             }
             catch
             {

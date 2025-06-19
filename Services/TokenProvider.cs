@@ -9,8 +9,6 @@ using System.Text;
 namespace DevHabitTracker.Services
 {
 
-    public record TokenRequest(string UserId, string Email);
-
     public class TokenProvider(IOptions<JwtAuthOptions> options)
     {
         private readonly JwtAuthOptions _jwtAuthOptions = options.Value;
@@ -27,7 +25,8 @@ namespace DevHabitTracker.Services
 
             List<Claim> claims = [
                 new(JwtRegisteredClaimNames.Sub, tokenRequest.UserId),
-                new(JwtRegisteredClaimNames.Email, tokenRequest.Email)
+                new(JwtRegisteredClaimNames.Email, tokenRequest.Email),
+                ..tokenRequest.Roles.Select(role => new Claim(ClaimTypes.Role, role))
                 ];
 
 
