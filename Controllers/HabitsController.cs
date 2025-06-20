@@ -12,7 +12,7 @@ namespace DevHabitTracker.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = Roles.Member)]
     public class HabitsController : ControllerBase
     {
         private readonly IHabitService _habitService;

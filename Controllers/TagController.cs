@@ -1,5 +1,6 @@
 ﻿using DevHabitTracker.DTOs.Habit;
 using DevHabitTracker.DTOs.Tag;
+using DevHabitTracker.Entities;
 using DevHabitTracker.Services;
 using DevHabitTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +11,7 @@ namespace DevHabitTracker.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = Roles.Member)]
     public class TagController : ControllerBase
     {
         private readonly ITagService _tagService;

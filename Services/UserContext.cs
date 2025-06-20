@@ -13,6 +13,7 @@ namespace DevHabitTracker.Services
         private const string CacheKeyPrefix = "users:id";
         private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(30);
 
+        // Here the primary key of the "Users" table, is returned as the user id. It is not the aspnet_users table's Id.
         public async Task<string?> GetUserIdAsync(CancellationToken cancellationToken)
         {
             string? identityId = httpContextAccessor.HttpContext?.User.GetIdentityId();

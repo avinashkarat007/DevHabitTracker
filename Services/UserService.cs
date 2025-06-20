@@ -66,7 +66,7 @@ namespace DevHabitTracker.Services
             return accessToeken;
         }
 
-        public async Task<(bool Succeeded, IdentityResult IdentityResult, string? UserId, AccessTokensDto accessToeken)> RegisterUserAsync(RegisterUserDto registerUserDto)
+        public async Task<(bool Succeeded, IdentityResult IdentityResult, string? UserId, AccessTokensDto? accessToeken)> RegisterUserAsync(RegisterUserDto registerUserDto)
         {
             using var identityTransaction = await _identityDbContext.Database.BeginTransactionAsync();
             using var appTransaction = await _applicationDbContext.Database.BeginTransactionAsync();
