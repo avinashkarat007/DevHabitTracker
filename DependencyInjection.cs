@@ -9,6 +9,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using OpenTelemetry;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -41,6 +45,28 @@ namespace DevHabitTracker
             builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
+            return builder;
+        }
+
+        public static WebApplicationBuilder AddObservability(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddOpenTelemetry()
+                .ConfigureResource(resource => resource.AddService(builder.Environment.ApplicationName))
+                .WithTracing(tracing => tracing
+                    .AddHttpClientInstrumentation()
+                    .AddAspNetCoreInstrumentation())
+                .WithMetrics(metrics => metrics
+                    .AddHttpClientInstrumentation()
+                    .AddAspNetCoreInstrumentation()
+                    .AddRuntimeInstrumentation())
+                .UseOtlpExporter();
+
+            builder.Logging.AddOpenTelemetry(options =>
+            {
+                options.IncludeScopes = true;
+                options.IncludeFormattedMessage = true;
+            });
 
             return builder;
         }

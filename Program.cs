@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder
     .AddApiServices()
     .AddErrorHandling()
+    .AddObservability()
     .AddDatabase()
     .AddApplicationServices()
     .AddAuthenticationServices();
